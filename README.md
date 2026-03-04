@@ -1,73 +1,81 @@
-# React + TypeScript + Vite
+# Eta Template Editor
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A live, browser-based editor for [Eta](https://eta.js.org/) templates. Write your template on the left, supply a JavaScript data object, and see the rendered HTML update instantly on the right — no build step, no server.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Live preview** — template and data are evaluated on every keystroke
+- **Monaco editor** — the same editor that powers VS Code, with syntax highlighting for HTML and JavaScript
+- **JavaScript data object** — supply the template context as a plain JS object literal (unquoted keys, trailing commas, and comments all work)
+- **Print to PDF** — send the rendered preview directly to the browser print dialog
+- **Persistent state** — template and data are saved to `localStorage` and restored on reload
+- **Light / dark / system theme** — toggle in the toolbar
 
-## React Compiler
+## Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+## Usage
+
+### Template
+
+Write an Eta template in the **Template** panel. Inside the template, `it` refers to the data object you provide:
+
+```html
+<h1>Hello, <%= it.name %>!</h1>
+<% if (it.items.length) { %>
+<ul>
+  <% it.items.forEach(item => { %>
+  <li><%= item %></li>
+  <% }) %>
+</ul>
+<% } %>
+```
+
+See the [Eta docs](https://eta.js.org/) for the full template syntax.
+
+### Data
+
+Write a JavaScript object literal in the **Data** panel. The object is passed to the template as `it`:
 
 ```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+return {
+  name: "World",
+  items: ["foo", "bar", "baz"],
+}
 ```
+
+### Print
+
+Click **Print preview** in the Preview header to open the browser print dialog. Add `@page` rules directly in your template `<style>` block to control paper size and margins:
+
+```html
+<style>
+  @page {
+    size: A4 portrait;
+    margin: 20mm;
+  }
+</style>
+```
+
+## Tech Stack
+
+| | |
+|---|---|
+| Framework | React 19 + TypeScript |
+| Bundler | Vite |
+| Editor | Monaco Editor (`@monaco-editor/react`) |
+| Template engine | Eta v4 |
+| UI components | shadcn/ui + Radix UI |
+| Styling | Tailwind CSS v4 |
+| State | Jotai (`atomWithStorage`) |
+| Layout | `react-resizable-panels` |
+
+## License
+
+MIT
