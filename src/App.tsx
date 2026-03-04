@@ -12,6 +12,7 @@ import { atomWithStorage } from "jotai/utils";
 import { useTheme } from "./components/ui/theme-provider";
 import { ToggleGroup, ToggleGroupItem } from "./components/ui/toggle-group";
 import { Monitor, Moon, Sun } from "lucide-react";
+import { useIsMobile } from "./lib/hooks";
 
 const templateAtom = atomWithStorage<string>(
   "template",
@@ -52,6 +53,7 @@ export function App() {
   const frameRef = useRef<HTMLIFrameElement | null>(null);
   const [template, setTemplate] = useAtom<string>(templateAtom);
   const [data, setData] = useAtom<string>(dataAtom);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (!frameRef.current) return;
@@ -79,16 +81,17 @@ export function App() {
 
   return (
     <div className="h-screen flex flex-col">
-      <header className="shrink-0 border-b px-4 py-2 flex justify-between items-center gap-4">
-        <h1 className="text-lg font-bold tracking-tight">
-          Eta template editor
+      <header className="shrink-0 border-b px-4 py-2 flex justify-between items-center gap-2">
+        <h1 className="text-lg font-bold tracking-tight truncate min-w-0">
+          <span className="hidden sm:inline">Eta template editor</span>
+          <span className="sm:hidden">Eta editor</span>
         </h1>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <a
             href="https://eta.js.org/"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors"
+            className="hidden sm:block text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors"
           >
             Eta docs
           </a>
@@ -140,67 +143,127 @@ export function App() {
           </Button>
         </div>
       </header>
-      <ResizablePanelGroup orientation="horizontal" className="flex-1 min-h-0">
-        <ResizablePanel>
-          <ResizablePanelGroup orientation="vertical" className="h-full">
-            <ResizablePanel>
-              <div className="h-full flex flex-col overflow-hidden">
-                <div className="shrink-0 border-b px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Template
-                </div>
-                <div className="flex-1 min-h-0">
-                  <Editor
-                    defaultLanguage="html"
-                    value={template}
-                    onChange={(v) => setTemplate(v ?? "")}
-                    theme={editorTheme}
-                    options={{
-                      minimap: {
-                        enabled: false,
-                      },
-                    }}
-                  />
-                </div>
+      {isMobile ? (
+        <ResizablePanelGroup orientation="vertical" className="flex-1 min-h-0">
+          <ResizablePanel defaultSize={33}>
+            <div className="h-full flex flex-col overflow-hidden">
+              <div className="shrink-0 border-b px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Template
               </div>
-            </ResizablePanel>
-            <ResizableHandle withHandle />
-            <ResizablePanel>
-              <div className="h-full flex flex-col overflow-hidden">
-                <div className="shrink-0 border-b px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Data
-                </div>
-                <div className="flex-1 min-h-0">
-                  <Editor
-                    defaultLanguage="javascript"
-                    value={data}
-                    onChange={(v) => setData(v ?? "")}
-                    theme={editorTheme}
-                    options={{
-                      minimap: {
-                        enabled: false,
-                      },
-                    }}
-                  />
-                </div>
+              <div className="flex-1 min-h-0">
+                <Editor
+                  defaultLanguage="html"
+                  value={template}
+                  onChange={(v) => setTemplate(v ?? "")}
+                  theme={editorTheme}
+                  options={{
+                    minimap: {
+                      enabled: false,
+                    },
+                  }}
+                />
               </div>
-            </ResizablePanel>
-          </ResizablePanelGroup>
-        </ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel>
-          <div className="h-full flex flex-col overflow-hidden">
-            <div className="shrink-0 border-b px-3 py-2 flex items-center gap-4">
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Preview
-              </span>
-              <Button size="xs" variant="outline" onClick={handlePrint}>
-                Print
-              </Button>
             </div>
-            <iframe ref={frameRef} className="bg-white flex-1 w-full"></iframe>
-          </div>
-        </ResizablePanel>
-      </ResizablePanelGroup>
+          </ResizablePanel>
+          <ResizableHandle withHandle />
+          <ResizablePanel defaultSize={33}>
+            <div className="h-full flex flex-col overflow-hidden">
+              <div className="shrink-0 border-b px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Data
+              </div>
+              <div className="flex-1 min-h-0">
+                <Editor
+                  defaultLanguage="javascript"
+                  value={data}
+                  onChange={(v) => setData(v ?? "")}
+                  theme={editorTheme}
+                  options={{
+                    minimap: {
+                      enabled: false,
+                    },
+                  }}
+                />
+              </div>
+            </div>
+          </ResizablePanel>
+          <ResizableHandle withHandle />
+          <ResizablePanel defaultSize={34}>
+            <div className="h-full flex flex-col overflow-hidden">
+              <div className="shrink-0 border-b px-3 py-2 flex items-center gap-4">
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Preview
+                </span>
+                <Button size="xs" variant="outline" onClick={handlePrint}>
+                  Print
+                </Button>
+              </div>
+              <iframe ref={frameRef} className="bg-white flex-1 w-full"></iframe>
+            </div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      ) : (
+        <ResizablePanelGroup orientation="horizontal" className="flex-1 min-h-0">
+          <ResizablePanel>
+            <ResizablePanelGroup orientation="vertical" className="h-full">
+              <ResizablePanel>
+                <div className="h-full flex flex-col overflow-hidden">
+                  <div className="shrink-0 border-b px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    Template
+                  </div>
+                  <div className="flex-1 min-h-0">
+                    <Editor
+                      defaultLanguage="html"
+                      value={template}
+                      onChange={(v) => setTemplate(v ?? "")}
+                      theme={editorTheme}
+                      options={{
+                        minimap: {
+                          enabled: false,
+                        },
+                      }}
+                    />
+                  </div>
+                </div>
+              </ResizablePanel>
+              <ResizableHandle withHandle />
+              <ResizablePanel>
+                <div className="h-full flex flex-col overflow-hidden">
+                  <div className="shrink-0 border-b px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    Data
+                  </div>
+                  <div className="flex-1 min-h-0">
+                    <Editor
+                      defaultLanguage="javascript"
+                      value={data}
+                      onChange={(v) => setData(v ?? "")}
+                      theme={editorTheme}
+                      options={{
+                        minimap: {
+                          enabled: false,
+                        },
+                      }}
+                    />
+                  </div>
+                </div>
+              </ResizablePanel>
+            </ResizablePanelGroup>
+          </ResizablePanel>
+          <ResizableHandle withHandle />
+          <ResizablePanel>
+            <div className="h-full flex flex-col overflow-hidden">
+              <div className="shrink-0 border-b px-3 py-2 flex items-center gap-4">
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Preview
+                </span>
+                <Button size="xs" variant="outline" onClick={handlePrint}>
+                  Print
+                </Button>
+              </div>
+              <iframe ref={frameRef} className="bg-white flex-1 w-full"></iframe>
+            </div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      )}
     </div>
   );
 }
