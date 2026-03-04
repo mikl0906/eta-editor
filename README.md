@@ -11,6 +11,8 @@ A live, browser-based editor for [Eta](https://eta.js.org/) templates. Write you
 - **Persistent state** — template and data are saved to `localStorage` and restored on reload
 - **Light / dark / system theme** — toggle in the toolbar
 
+(Web app)[https://eta-editor.fly.dev]
+
 ## Getting Started
 
 ```bash
@@ -52,7 +54,7 @@ return {
 
 ### Print
 
-Click **Print preview** in the Preview header to open the browser print dialog. Add `@page` rules directly in your template `<style>` block to control paper size and margins:
+Click **Print** in the Preview header to open the browser print dialog. Add `@page` rules directly in your template `<style>` block to control paper size and margins:
 
 ```html
 <style>
