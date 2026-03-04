@@ -2,6 +2,8 @@
 
 A live, browser-based editor for [Eta](https://eta.js.org/) templates. Write your template on the left, supply a JavaScript data object, and see the rendered HTML update instantly on the right — no build step, no server.
 
+[Web app](https://eta-editor.fly.dev)
+
 ## Features
 
 - **Live preview** — template and data are evaluated on every keystroke
@@ -10,8 +12,6 @@ A live, browser-based editor for [Eta](https://eta.js.org/) templates. Write you
 - **Print to PDF** — send the rendered preview directly to the browser print dialog
 - **Persistent state** — template and data are saved to `localStorage` and restored on reload
 - **Light / dark / system theme** — toggle in the toolbar
-
-(Web app)[https://eta-editor.fly.dev]
 
 ## Getting Started
 
