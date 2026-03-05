@@ -14,11 +14,19 @@ import { ToggleGroup, ToggleGroupItem } from "./components/ui/toggle-group";
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useIsMobile } from "./lib/hooks";
 
-const templateAtom = atomWithStorage<string>(
-  "template",
-  "<style>\r\n    /* Optional print settings */\r\n    @page {\r\n        size: A4 portrait;\r\n        margin: 20mm;\r\n    }\r\n</style>\r\n\r\nHello, <%= it.name %>!",
-);
-const dataAtom = atomWithStorage<string>("data", 'return { name: "World" }');
+const defaultTemplate = `<style>
+  /* Optional print settings */
+  @page {
+    size: A4 portrait;
+    margin: 20mm;
+  }
+</style>
+
+Hello, <%= it.name %>!`;
+const defaultData = 'return { name: "World" }';
+
+const templateAtom = atomWithStorage<string>("template", defaultTemplate);
+const dataAtom = atomWithStorage<string>("data", defaultData);
 
 const eta = new Eta();
 
@@ -53,7 +61,11 @@ type TemplatePanelProps = {
   editorTheme: string;
 };
 
-function TemplatePanel({ template, setTemplate, editorTheme }: TemplatePanelProps) {
+function TemplatePanel({
+  template,
+  setTemplate,
+  editorTheme,
+}: TemplatePanelProps) {
   return (
     <div className="h-full flex flex-col overflow-hidden">
       <div className="shrink-0 border-b px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -237,7 +249,10 @@ export function App() {
           </ResizablePanel>
         </ResizablePanelGroup>
       ) : (
-        <ResizablePanelGroup orientation="horizontal" className="flex-1 min-h-0">
+        <ResizablePanelGroup
+          orientation="horizontal"
+          className="flex-1 min-h-0"
+        >
           <ResizablePanel>
             <ResizablePanelGroup orientation="vertical" className="h-full">
               <ResizablePanel>
@@ -266,4 +281,3 @@ export function App() {
     </div>
   );
 }
-
