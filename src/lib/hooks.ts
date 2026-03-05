@@ -4,7 +4,7 @@ const MOBILE_BREAKPOINT = 768;
 
 export function useIsMobile(): boolean {
   const [isMobile, setIsMobile] = useState(
-    () => window.innerWidth <= MOBILE_BREAKPOINT - 1,
+    () => window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`).matches,
   );
 
   useEffect(() => {
