@@ -47,6 +47,77 @@ const printHtmlToPdf = (html: string) => {
   }, 1000);
 };
 
+type TemplatePanelProps = {
+  template: string;
+  setTemplate: (v: string) => void;
+  editorTheme: string;
+};
+
+function TemplatePanel({ template, setTemplate, editorTheme }: TemplatePanelProps) {
+  return (
+    <div className="h-full flex flex-col overflow-hidden">
+      <div className="shrink-0 border-b px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        Template
+      </div>
+      <div className="flex-1 min-h-0">
+        <Editor
+          defaultLanguage="html"
+          value={template}
+          onChange={(v) => setTemplate(v ?? "")}
+          theme={editorTheme}
+          options={{ minimap: { enabled: false } }}
+        />
+      </div>
+    </div>
+  );
+}
+
+type DataPanelProps = {
+  data: string;
+  setData: (v: string) => void;
+  editorTheme: string;
+};
+
+function DataPanel({ data, setData, editorTheme }: DataPanelProps) {
+  return (
+    <div className="h-full flex flex-col overflow-hidden">
+      <div className="shrink-0 border-b px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        Data
+      </div>
+      <div className="flex-1 min-h-0">
+        <Editor
+          defaultLanguage="javascript"
+          value={data}
+          onChange={(v) => setData(v ?? "")}
+          theme={editorTheme}
+          options={{ minimap: { enabled: false } }}
+        />
+      </div>
+    </div>
+  );
+}
+
+type PreviewPanelProps = {
+  frameRef: React.RefObject<HTMLIFrameElement | null>;
+  onPrint: () => void;
+};
+
+function PreviewPanel({ frameRef, onPrint }: PreviewPanelProps) {
+  return (
+    <div className="h-full flex flex-col overflow-hidden">
+      <div className="shrink-0 border-b px-3 py-2 flex items-center gap-4">
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Preview
+        </span>
+        <Button size="xs" variant="outline" onClick={onPrint}>
+          Print
+        </Button>
+      </div>
+      <iframe ref={frameRef} className="bg-white flex-1 w-full"></iframe>
+    </div>
+  );
+}
+
 export function App() {
   const { theme, actualTheme, setTheme } = useTheme();
   const editorTheme = actualTheme === "dark" ? "vs-dark" : "light";
@@ -67,7 +138,7 @@ export function App() {
       }
     };
     update();
-  }, [frameRef, template, data]);
+  }, [frameRef, template, data, isMobile]);
 
   const handlePrint = () => {
     if (!frameRef.current) return;
@@ -146,59 +217,23 @@ export function App() {
       {isMobile ? (
         <ResizablePanelGroup orientation="vertical" className="flex-1 min-h-0">
           <ResizablePanel defaultSize={33}>
-            <div className="h-full flex flex-col overflow-hidden">
-              <div className="shrink-0 border-b px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Template
-              </div>
-              <div className="flex-1 min-h-0">
-                <Editor
-                  defaultLanguage="html"
-                  value={template}
-                  onChange={(v) => setTemplate(v ?? "")}
-                  theme={editorTheme}
-                  options={{
-                    minimap: {
-                      enabled: false,
-                    },
-                  }}
-                />
-              </div>
-            </div>
+            <TemplatePanel
+              template={template}
+              setTemplate={setTemplate}
+              editorTheme={editorTheme}
+            />
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={33}>
-            <div className="h-full flex flex-col overflow-hidden">
-              <div className="shrink-0 border-b px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Data
-              </div>
-              <div className="flex-1 min-h-0">
-                <Editor
-                  defaultLanguage="javascript"
-                  value={data}
-                  onChange={(v) => setData(v ?? "")}
-                  theme={editorTheme}
-                  options={{
-                    minimap: {
-                      enabled: false,
-                    },
-                  }}
-                />
-              </div>
-            </div>
+            <DataPanel
+              data={data}
+              setData={setData}
+              editorTheme={editorTheme}
+            />
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={34}>
-            <div className="h-full flex flex-col overflow-hidden">
-              <div className="shrink-0 border-b px-3 py-2 flex items-center gap-4">
-                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Preview
-                </span>
-                <Button size="xs" variant="outline" onClick={handlePrint}>
-                  Print
-                </Button>
-              </div>
-              <iframe ref={frameRef} className="bg-white flex-1 w-full"></iframe>
-            </div>
+            <PreviewPanel frameRef={frameRef} onPrint={handlePrint} />
           </ResizablePanel>
         </ResizablePanelGroup>
       ) : (
@@ -206,64 +241,29 @@ export function App() {
           <ResizablePanel>
             <ResizablePanelGroup orientation="vertical" className="h-full">
               <ResizablePanel>
-                <div className="h-full flex flex-col overflow-hidden">
-                  <div className="shrink-0 border-b px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Template
-                  </div>
-                  <div className="flex-1 min-h-0">
-                    <Editor
-                      defaultLanguage="html"
-                      value={template}
-                      onChange={(v) => setTemplate(v ?? "")}
-                      theme={editorTheme}
-                      options={{
-                        minimap: {
-                          enabled: false,
-                        },
-                      }}
-                    />
-                  </div>
-                </div>
+                <TemplatePanel
+                  template={template}
+                  setTemplate={setTemplate}
+                  editorTheme={editorTheme}
+                />
               </ResizablePanel>
               <ResizableHandle withHandle />
               <ResizablePanel>
-                <div className="h-full flex flex-col overflow-hidden">
-                  <div className="shrink-0 border-b px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Data
-                  </div>
-                  <div className="flex-1 min-h-0">
-                    <Editor
-                      defaultLanguage="javascript"
-                      value={data}
-                      onChange={(v) => setData(v ?? "")}
-                      theme={editorTheme}
-                      options={{
-                        minimap: {
-                          enabled: false,
-                        },
-                      }}
-                    />
-                  </div>
-                </div>
+                <DataPanel
+                  data={data}
+                  setData={setData}
+                  editorTheme={editorTheme}
+                />
               </ResizablePanel>
             </ResizablePanelGroup>
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel>
-            <div className="h-full flex flex-col overflow-hidden">
-              <div className="shrink-0 border-b px-3 py-2 flex items-center gap-4">
-                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Preview
-                </span>
-                <Button size="xs" variant="outline" onClick={handlePrint}>
-                  Print
-                </Button>
-              </div>
-              <iframe ref={frameRef} className="bg-white flex-1 w-full"></iframe>
-            </div>
+            <PreviewPanel frameRef={frameRef} onPrint={handlePrint} />
           </ResizablePanel>
         </ResizablePanelGroup>
       )}
     </div>
   );
 }
+
