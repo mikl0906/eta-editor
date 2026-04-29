@@ -30,6 +30,16 @@ const dataAtom = atomWithStorage<string>("data", defaultData);
 
 const eta = new Eta();
 
+const downloadFile = (filename: string, content: string) => {
+  const blob = new Blob([content], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
 const printHtmlToPdf = (html: string) => {
   const iframe = document.createElement("iframe");
   iframe.style.position = "fixed";
@@ -66,10 +76,19 @@ function TemplatePanel({
   setTemplate,
   editorTheme,
 }: TemplatePanelProps) {
+  const handleDownload = () => {
+    downloadFile("template.html", template);
+  };
+
   return (
     <div className="h-full flex flex-col overflow-hidden">
-      <div className="shrink-0 border-b px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-        Template
+      <div className="shrink-0 border-b px-3 py-2 flex items-center gap-4">
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Template
+        </span>
+        <Button size="xs" variant="outline" onClick={handleDownload}>
+          Download
+        </Button>
       </div>
       <div className="flex-1 min-h-0">
         <Editor
@@ -91,10 +110,18 @@ type DataPanelProps = {
 };
 
 function DataPanel({ data, setData, editorTheme }: DataPanelProps) {
+  const handleDownload = () => {
+    downloadFile("data.js", data);
+  };
   return (
     <div className="h-full flex flex-col overflow-hidden">
-      <div className="shrink-0 border-b px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-        Data
+      <div className="shrink-0 border-b px-3 py-2 flex items-center gap-4">
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Data
+        </span>
+        <Button size="xs" variant="outline" onClick={handleDownload}>
+          Download
+        </Button>
       </div>
       <div className="flex-1 min-h-0">
         <Editor
